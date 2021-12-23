@@ -1,0 +1,23 @@
+{
+    // Use o IntelliSense para saber mais sobre os atributos possíveis.
+    // Focalizar para exibir as descrições dos atributos existentes.
+    // Para obter mais informações, acesse: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "meuapp",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--dart-define", "SUPABASEURL=https://fkwjfmvabkxlhmvyiaec.supabase.co",
+                "--dart-define", "SUPABASEKEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzOTQ1NTEzOCwiZXhwIjoxOTU1MDMxMTM4fQ.hCjBVs43z6ilm4b5t_f4RdiRoYlFyD_cR_sk0M0MQD8"
+            ]
+        },
+        {
+            "name": "meuapp (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        }
+    ]
+}
