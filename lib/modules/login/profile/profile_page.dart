@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meuapp/shared/models/user_model.dart';
 import 'package:meuapp/shared/theme/app_theme.dart';
-import 'package:meuapp/shared/widgets/bottom_navigation/app_bottom_navigation.dart';
 import 'package:meuapp/shared/widgets/divider/app_divider_horizontal.dart';
 
 class ProfilePage extends StatefulWidget {
