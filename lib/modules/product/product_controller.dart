@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 
 import 'package:meuapp/modules/product/repositories/product_repository.dart';
+import 'package:meuapp/shared/models/order_model.dart';
 import 'package:meuapp/shared/models/user_model.dart';
 import 'package:meuapp/shared/utils/app_state.dart';
 
 class ProductController extends ChangeNotifier {
   AppState state = AppState.empty();
   UserModel user;
+  OrderModel? order;
   ProductRepository repository;
   final formKey = GlobalKey<FormState>();
 
@@ -16,6 +18,7 @@ class ProductController extends ChangeNotifier {
   ProductController({
     required this.user,
     required this.repository,
+    this.order,
   });
 
   void onChange({String? name, String? price, String? created_at}) {
@@ -51,10 +54,26 @@ class ProductController extends ChangeNotifier {
             price: _price,
             created_at: _created_at);
         if (response) {
-          print(response);
           update(AppState.success<bool>(response));
         } else {
           throw Exception("Não foi possivel cadastrar o produto");
+        }
+      } catch (e) {
+        update(AppState.error(e.toString()));
+      }
+    }
+  }
+
+  Future<void> updateOrders() async {
+    if (validate()) {
+      try {
+        update(AppState.loading());
+        final response = await repository.update(
+            id: order!.id, name: _name, price: _price, created_at: _created_at);
+        if (response) {
+          update(AppState.success<bool>(response));
+        } else {
+          throw Exception("Não foi possivel atualizar o produto");
         }
       } catch (e) {
         update(AppState.error(e.toString()));
