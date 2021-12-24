@@ -22,4 +22,19 @@ class ProductRepositoryImpl implements ProductRepository {
     });
     return response;
   }
+
+  @override
+  Future<bool> update(
+      {required String id,
+      required String name,
+      required String price,
+      required String created_at}) async {
+    final priceParse = double.parse(price.replaceAll("R\$", ""));
+    final response = await database.update(table: "orders", id: id, data: {
+      "name": name.trim(),
+      "price": priceParse,
+      "created_at": created_at
+    });
+    return response;
+  }
 }
