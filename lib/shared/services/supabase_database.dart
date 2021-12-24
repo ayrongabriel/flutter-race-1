@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/foundation.dart';
 import 'package:meuapp/shared/models/order_model.dart';
 import 'package:meuapp/shared/models/user_model.dart';
@@ -98,21 +96,6 @@ class SupabaseDatabase implements AppDatabase {
         .toList();
   }
 
-  /* @override
-  Future<List<Map<String, dynamic>>> allByUser(
-      {required String table, required String id_user}) async {
-    final response = await client
-        .from(table)
-        .select()
-        .filter("id_user", "eq", id_user)
-        .order("created_at")
-        .execute();
-    if (response.error != null) throw Exception(response.error!.message);
-    return (response.data as List<dynamic>)
-        .map((e) => e as Map<String, dynamic>)
-        .toList();
-  } */
-
   @override
   Future<bool> create(
       {required String table, required Map<String, dynamic> data}) async {
@@ -129,9 +112,13 @@ class SupabaseDatabase implements AppDatabase {
   }
 
   @override
-  Future<OrderModel> show({required String table, required String id}) {
-    // TODO: implement show
-    throw UnimplementedError();
+  Future<OrderModel> show({required String table, required String id}) async {
+    final response = await client.from(table).select().eq("id", id).execute();
+    if (response.error == null) {
+      return OrderModel.fromMap(response.data);
+    } else {
+      throw Exception(response.error!.message);
+    }
   }
 
   @override
