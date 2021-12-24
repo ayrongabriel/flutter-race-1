@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:meuapp/modules/home/pages/feed/feed_page.dart';
 import 'package:meuapp/modules/product/product_bottomsheet.dart';
 import 'package:meuapp/shared/models/user_model.dart';
 import 'package:meuapp/shared/theme/app_theme.dart';
@@ -47,6 +46,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: AppTheme.colors.background,
         elevation: 0,
+        leadingWidth: 0,
         title: Padding(
           padding: const EdgeInsets.symmetric(vertical: 15),
           child: Row(
