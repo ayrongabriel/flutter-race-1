@@ -1,3 +1,4 @@
+import 'package:meuapp/shared/models/order_model.dart';
 import 'package:meuapp/shared/models/user_model.dart';
 import 'package:meuapp/shared/services/supabase_database.dart';
 
@@ -20,4 +21,10 @@ abstract class AppDatabase {
       {required String table, required String id_user});
   Future<bool> create(
       {required String table, required Map<String, dynamic> data});
+  Future<OrderModel> show({required String table, required String id});
+  Future<bool> update(
+      {required String table,
+      required String id,
+      required Map<String, dynamic> data});
+  Future<bool> delete({required String table, required String id});
 }
