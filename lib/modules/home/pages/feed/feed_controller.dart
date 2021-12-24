@@ -90,4 +90,38 @@ class FeedController extends ChangeNotifier {
       update(AppState.error(e.toString()));
     }
   }
+
+  Future<void> deleteUndo(
+      {required String id_user,
+      required String name,
+      required String price,
+      required String created_at}) async {
+    try {
+      update(AppState.loading());
+      final response = await repository.create(
+          id_user: user.id, name: name, price: price, created_at: created_at);
+      if (response) {
+        print(response);
+        final responseAll = await repository.allByUser(id_user: user.id);
+        update(AppState.success<List<OrderModel>>(responseAll));
+        // update(AppState.success<bool>(response));
+      } else {
+        throw Exception("Não foi possivel cadastrar o produto");
+      }
+    } catch (e) {
+      update(AppState.error(e.toString()));
+    }
+  }
+
+  Future<bool> delete({required String id}) async {
+    try {
+      update(AppState.loading());
+      await repository.delete(id: id);
+      final response = await repository.allByUser(id_user: user.id);
+      update(AppState.success<List<OrderModel>>(response));
+    } catch (e) {
+      update(AppState.error(e.toString()));
+    }
+    return true;
+  }
 }
