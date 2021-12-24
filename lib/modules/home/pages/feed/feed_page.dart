@@ -54,7 +54,10 @@ class _FeedPageState extends State<FeedPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   CircularProgressIndicator(),
-                  Text("carregando..."),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Text("carregando..."),
+                  ),
                 ],
               ),
             ),
@@ -95,7 +98,9 @@ class _FeedPageState extends State<FeedPage> {
                   ),
                   for (var order in orders)
                     AppListTile(
+                      controller: controller,
                       order: order,
+                      user: widget.user,
                     ),
                 ],
               );
