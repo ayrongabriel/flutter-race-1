@@ -24,6 +24,7 @@ dependencies:
   supabase: ^0.2.10
   flutter_multi_formatter: ^2.5.1
   intl: ^0.17.0
+  image_picker: ^0.8.4+4
 
 dev_dependencies:
   flutter_test:
