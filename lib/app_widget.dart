@@ -4,7 +4,7 @@ import 'package:meuapp/modules/home/home_page.dart';
 import 'package:meuapp/modules/home/pages/feed/feed_page.dart';
 import 'package:meuapp/modules/login/login_page.dart';
 import 'package:meuapp/modules/login/pages/register/register_page.dart';
-import 'package:meuapp/modules/login/profile/profile_page.dart';
+import 'package:meuapp/modules/profile/profile_page.dart';
 import 'package:meuapp/modules/splash/splash_page.dart';
 import 'package:meuapp/shared/models/user_model.dart';
 
