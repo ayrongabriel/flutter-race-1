@@ -30,6 +30,7 @@ class _HomePageState extends State<HomePage> {
             topLeft: Radius.circular(10),
             topRight: Radius.circular(10),
           )),
+          isScrollControlled: true,
           context: context,
           builder: (context) => ProductBottomSheet(
                 user: widget.user,

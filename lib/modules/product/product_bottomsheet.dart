@@ -68,14 +68,17 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 42, vertical: 16),
+        padding: EdgeInsets.only(
+            top: 0,
+            right: 25,
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            left: 25),
         child: Form(
           key: controller.formKey,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(
-                height: 32,
-              ),
+              SizedBox(height: 32),
               InputText(
                 label: "Produto",
                 hint: "Digite um nome",
@@ -83,9 +86,7 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                 validator: (value) =>
                     value.isNotEmpty ? null : "Favor digite o nome do produto",
               ),
-              SizedBox(
-                height: 8,
-              ),
+              SizedBox(height: 8),
               InputText(
                 label: "Preço",
                 hint: "Digite o valor",
@@ -101,9 +102,7 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                 validator: (value) =>
                     value.isNotEmpty ? null : "Favor digite o valor do produto",
               ),
-              SizedBox(
-                height: 8,
-              ),
+              SizedBox(height: 8),
               Row(
                 children: [
                   Expanded(
@@ -117,9 +116,7 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                   ),
                 ],
               ),
-              SizedBox(
-                height: 28,
-              ),
+              SizedBox(height: 28),
               AnimatedBuilder(
                 animation: controller,
                 builder: (_, __) => controller.state.when(
@@ -143,9 +140,7 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                         message,
                         style: AppTheme.textStyles.msgError,
                       ),
-                      SizedBox(
-                        height: 28,
-                      ),
+                      SizedBox(height: 28),
                       Button(
                         label: "Adicionar",
                         onTap: () {
@@ -163,7 +158,8 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                     },
                   ),
                 ),
-              )
+              ),
+              SizedBox(height: 25)
             ],
           ),
         ),

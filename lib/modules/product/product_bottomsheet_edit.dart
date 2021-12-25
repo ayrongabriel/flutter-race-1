@@ -83,14 +83,15 @@ class _ProductBottomSheetEditState extends State<ProductBottomSheetEdit> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 42, vertical: 16),
+        padding: EdgeInsets.only(
+            right: 25,
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            left: 25),
         child: Form(
           key: controller.formKey,
           child: Column(
             children: [
-              SizedBox(
-                height: 32,
-              ),
+              SizedBox(height: 32),
               InputText(
                 controller: _textEditingControllerName,
                 label: "Produto",
@@ -99,9 +100,7 @@ class _ProductBottomSheetEditState extends State<ProductBottomSheetEdit> {
                 validator: (value) =>
                     value.isNotEmpty ? null : "Favor digite o nome do produto",
               ),
-              SizedBox(
-                height: 8,
-              ),
+              SizedBox(height: 8),
               InputText(
                 controller: _textEditingControllerPrice,
                 label: "Preço",
@@ -118,9 +117,7 @@ class _ProductBottomSheetEditState extends State<ProductBottomSheetEdit> {
                 validator: (value) =>
                     value.isNotEmpty ? null : "Favor digite o valor do produto",
               ),
-              SizedBox(
-                height: 8,
-              ),
+              SizedBox(height: 8),
               Row(
                 children: [
                   Expanded(
@@ -134,9 +131,7 @@ class _ProductBottomSheetEditState extends State<ProductBottomSheetEdit> {
                   ),
                 ],
               ),
-              SizedBox(
-                height: 28,
-              ),
+              SizedBox(height: 28),
               AnimatedBuilder(
                 animation: controller,
                 builder: (_, __) => controller.state.when(
@@ -161,11 +156,9 @@ class _ProductBottomSheetEditState extends State<ProductBottomSheetEdit> {
                         message,
                         style: AppTheme.textStyles.msgError,
                       ),
-                      SizedBox(
-                        height: 28,
-                      ),
+                      SizedBox(height: 28),
                       Button(
-                        label: "Adicionar",
+                        label: "Alterar",
                         onTap: () {
                           controller.updateOrders();
                         },
@@ -173,13 +166,14 @@ class _ProductBottomSheetEditState extends State<ProductBottomSheetEdit> {
                     ],
                   ),
                   orElse: () => Button(
-                    label: "Adicionar",
+                    label: "Alterar",
                     onTap: () {
                       controller.updateOrders();
                     },
                   ),
                 ),
-              )
+              ),
+              SizedBox(height: 25)
             ],
           ),
         ),

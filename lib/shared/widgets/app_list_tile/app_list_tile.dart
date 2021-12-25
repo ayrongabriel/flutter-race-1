@@ -23,6 +23,7 @@ class AppListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     void onChangeModal() async {
       await showModalBottomSheet(
+        isScrollControlled: true,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
           topLeft: Radius.circular(10),
