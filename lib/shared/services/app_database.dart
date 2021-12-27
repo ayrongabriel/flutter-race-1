@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:meuapp/shared/models/order_model.dart';
 import 'package:meuapp/shared/models/user_model.dart';
 import 'package:meuapp/shared/services/supabase_database.dart';
@@ -27,4 +29,10 @@ abstract class AppDatabase {
       required String id,
       required Map<String, dynamic> data});
   Future<bool> delete({required String table, required String id});
+
+  // Storage
+  Future<dynamic> uploadStorageProfile(
+      {required String bucket, required String path, required File file});
+  Future<dynamic> deleteStorage({required String bucket, required String path});
+  String? getPublicUrl({required String bucket, required String path});
 }

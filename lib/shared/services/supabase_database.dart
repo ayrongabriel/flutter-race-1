@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:meuapp/shared/models/order_model.dart';
 import 'package:meuapp/shared/models/user_model.dart';
@@ -29,7 +31,6 @@ class SupabaseDatabase implements AppDatabase {
     final response = await client.auth.signIn(email: email, password: password);
     if (response.error == null) {
       final user = await getUser(response.user!.id);
-      print("User: $user}");
       return user;
     } else {
       throw Exception(
@@ -130,5 +131,54 @@ class SupabaseDatabase implements AppDatabase {
         await client.from(table).update(data).eq("id", id).execute();
     if (response.error != null) throw Exception(response.error!.message);
     return true;
+  }
+
+  @override
+  Future<dynamic> uploadStorageProfile(
+      {required String bucket,
+      required String path,
+      required File file}) async {
+    final user = await client.auth.user();
+    final response = await client.storage.from('avatars').upload(path, file);
+    if (response.error == null) {
+      final profile = await client
+          .from("users")
+          .select()
+          .eq("id", user!.id.toString())
+          .execute();
+
+      final userProfile = UserModel.fromMap(profile.toJson());
+
+      this.deleteStorage(bucket: "avatars", path: userProfile.avatar!);
+      await client
+          .from("users")
+          .update({
+            "avatar": path,
+          })
+          .eq("id", user.id.toString())
+          .execute();
+    } else {
+      throw Exception(response.error!.message);
+    }
+
+    print('upload response : ${response}');
+    return response.data;
+  }
+
+  @override
+  Future<dynamic> deleteStorage(
+      {required String bucket, required String path}) async {
+    final response = await client.storage.from("avatars").remove([path]);
+    return response;
+  }
+
+  @override
+  String? getPublicUrl({required String bucket, required String path}) {
+    () async {
+      final response = await client.storage.from(bucket).list();
+      if (response.error != null) throw Exception(response.error!.message);
+      print("response url ${response.data}");
+      return response.data;
+    };
   }
 }
