@@ -3,7 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:meuapp/modules/profile/profile_controller.dart';
+import 'package:meuapp/modules/profile/repository/profile_repository_impl.dart';
 import 'package:meuapp/shared/models/user_model.dart';
+import 'package:meuapp/shared/services/app_database.dart';
 import 'package:meuapp/shared/theme/app_theme.dart';
 import 'package:meuapp/shared/widgets/button/button_widget.dart';
 import 'package:meuapp/shared/widgets/divider/app_divider_horizontal.dart';
@@ -20,7 +23,9 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   File? _image;
+  var _path;
   TextEditingController _textEditingController = TextEditingController();
+  late final ProfileController controller;
 
   Future _imagePicker({required ImageSource source, int? quality}) async {
     try {
@@ -28,12 +33,15 @@ class _ProfilePageState extends State<ProfilePage> {
           await ImagePicker().pickImage(source: source, imageQuality: quality);
       if (image == null) return;
       final imageTemp = File(image.path);
+
       setState(() {
         this._image = imageTemp;
+        this._path = image.name;
       });
     } on PlatformException catch (e) {
       print(e.message);
     }
+    controller.updateStorage(path: _path, file: _image!);
   }
 
   Future _showModalImagePicker() async {
@@ -110,7 +118,16 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     _textEditingController.text = widget.user.name;
+    controller = ProfileController(
+        repository: ProfileRepositoryImpl(database: AppDatabase.instance));
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _textEditingController.dispose();
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -140,19 +157,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Stack(
                       children: [
                         ClipOval(
-                          child: _image == null
+                          child: widget.user.avatar == null
                               ? Container(
                                   color: AppTheme.colors.textEnabled,
                                   height: 120,
                                   width: 120,
                                   child: Center(child: Text("Foto")),
                                 )
-                              : Image.file(
-                                  _image!,
-                                  fit: BoxFit.cover,
-                                  height: 120,
-                                  width: 120,
-                                ),
+                              : Container(),
                         ),
                         Positioned(
                           right: 0,
@@ -193,6 +205,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 contentPadding: EdgeInsets.symmetric(horizontal: 0),
                 title: Text("Email: "),
                 trailing: Text("${widget.user.email}"),
+              ),
+              AppDividerHorizontal(height: 1, padding: 15),
+              Text(widget.user.avatar!),
+              Text(
+                controller.urlAvatar(path: widget.user.avatar),
               ),
               AppDividerHorizontal(height: 1, padding: 15),
               InkWell(
