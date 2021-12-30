@@ -179,23 +179,30 @@ class AppListTile extends StatelessWidget {
                         );
                       });
             },
-            child: Card(
-              elevation: 0,
-              margin: EdgeInsets.all(0),
-              child: ListTile(
-                title: Text(
-                  order.name,
-                ).label,
-                subtitle: Text("R\$ ${order.price.toStringAsFixed(2)}"),
-                leading: CircleAvatar(
-                  radius: 30,
-                  child: Text(
-                    DateFormat("dd/MM")
-                        .format(DateTime.parse(order.created_at))
-                        .toString(),
-                    style: AppTheme.textStyles.buttonBoldTextColor,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, "/show-product", arguments: order);
+              },
+              child: Card(
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                margin: EdgeInsets.all(0),
+                child: ListTile(
+                  title: Text(
+                    order.name,
+                  ).label,
+                  subtitle: Text("R\$ ${order.price.toStringAsFixed(2)}"),
+                  leading: CircleAvatar(
+                    radius: 30,
+                    child: Text(
+                      DateFormat("dd/MM")
+                          .format(DateTime.parse(order.created_at))
+                          .toString(),
+                      style: AppTheme.textStyles.buttonBoldTextColor,
+                    ),
+                    backgroundColor: AppTheme.colors.background,
                   ),
-                  backgroundColor: AppTheme.colors.background,
                 ),
               ),
             ),
