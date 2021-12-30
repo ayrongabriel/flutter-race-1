@@ -4,8 +4,10 @@ import 'package:meuapp/modules/home/home_page.dart';
 import 'package:meuapp/modules/home/pages/feed/feed_page.dart';
 import 'package:meuapp/modules/login/login_page.dart';
 import 'package:meuapp/modules/login/pages/register/register_page.dart';
+import 'package:meuapp/modules/product/pages/show_product_page.dart';
 import 'package:meuapp/modules/profile/profile_page.dart';
 import 'package:meuapp/modules/splash/splash_page.dart';
+import 'package:meuapp/shared/models/order_model.dart';
 import 'package:meuapp/shared/models/user_model.dart';
 
 class AppWidget extends StatelessWidget {
@@ -38,9 +40,14 @@ class AppWidget extends StatelessWidget {
                 ProfilePage(
                   user: ModalRoute.of(context)!.settings.arguments as UserModel,
                 ),
+                // ShowProductPage(
+                //     product: ModalRoute.of(context)!.settings.arguments
+                //         as OrderModel),
               ],
               user: ModalRoute.of(context)!.settings.arguments as UserModel,
             ),
+        "/show-product": (context) => ShowProductPage(
+            product: ModalRoute.of(context)!.settings.arguments as OrderModel),
       },
     );
   }
