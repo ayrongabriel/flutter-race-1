@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:meuapp/shared/models/order_model.dart';
 import 'package:meuapp/shared/models/user_model.dart';
@@ -10,12 +10,9 @@ abstract class AppDatabase {
 
   Future<UserModel> login({required String email, required String password});
   Future<UserModel> registerUser(UserModel user);
-  Future<UserModel> getUser(String id);
-  Future<UserModel> register({
-    required String email,
-    required String password,
-    required String name,
-  });
+  Future<UserModel> getProfile(String id);
+  Future<UserModel> register(
+      {required String email, required String password, required String name});
 
   // Future<bool> find(String table, String id);
   Future<List<Map<String, dynamic>>> all(String table);
@@ -31,8 +28,19 @@ abstract class AppDatabase {
   Future<bool> delete({required String table, required String id});
 
   // Storage
-  Future<dynamic> uploadStorageProfile(
-      {required String bucket, required String path, required File file});
-  Future<dynamic> deleteStorage({required String bucket, required String path});
-  String? getPublicUrl({required String bucket, required String path});
+  Future<void> uploadStorage(
+      {required String bucket,
+      required String path,
+      required Uint8List bytes,
+      required String table,
+      required String column});
+  Future<void> deleteStorage({required String bucket, required String path});
+  Future<String?> getPublicUrl(
+      {required String table, required String column, required String bucket});
+
+  // profile
+  Future<UserModel> updateProfile(
+      {required String table,
+      required String id,
+      required Map<String, dynamic> data});
 }

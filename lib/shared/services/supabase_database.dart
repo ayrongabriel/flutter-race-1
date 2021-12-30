@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:meuapp/shared/models/order_model.dart';
@@ -30,7 +30,7 @@ class SupabaseDatabase implements AppDatabase {
       {required String email, required String password}) async {
     final response = await client.auth.signIn(email: email, password: password);
     if (response.error == null) {
-      final user = await getUser(response.user!.id);
+      final user = await getProfile(response.user!.id);
       return user;
     } else {
       throw Exception(
@@ -46,7 +46,11 @@ class SupabaseDatabase implements AppDatabase {
   }) async {
     final response = await client.auth.signUp(email, password);
     if (response.error == null) {
-      final user = UserModel(id: response.user!.id, name: name, email: email);
+      final user = UserModel(
+          id: response.user!.id,
+          name: name,
+          email: email,
+          avatar_url: "avatar_default.jpg");
       await registerUser(user);
       return user;
     } else {
@@ -55,11 +59,15 @@ class SupabaseDatabase implements AppDatabase {
   }
 
   @override
-  Future<UserModel> getUser(String id) async {
-    final response =
-        await client.from("users").select().filter("id", "eq", id).execute();
+  Future<UserModel> getProfile(String id) async {
+    final response = await client
+        .from("profiles")
+        .select()
+        .filter("id", "eq", id)
+        .single()
+        .execute();
     if (response.error == null) {
-      final user = UserModel.fromMap(response.data[0]);
+      final user = UserModel.fromMap(response.data);
       return user;
     } else {
       throw response.error?.message ?? "Erro ao buscar usuário";
@@ -68,7 +76,7 @@ class SupabaseDatabase implements AppDatabase {
 
   @override
   Future<UserModel> registerUser(UserModel user) async {
-    await client.from("users").insert(user.toMap()).execute();
+    await client.from("profiles").insert(user.toMap()).execute();
     return user;
   }
 
@@ -134,51 +142,70 @@ class SupabaseDatabase implements AppDatabase {
   }
 
   @override
-  Future<dynamic> uploadStorageProfile(
+  Future<void> uploadStorage(
       {required String bucket,
       required String path,
-      required File file}) async {
+      required Uint8List bytes,
+      required String table,
+      required String column}) async {
     final user = await client.auth.user();
-    final response = await client.storage.from('avatars').upload(path, file);
+
+    final response =
+        await client.storage.from(bucket).uploadBinary(path, bytes);
     if (response.error == null) {
-      final profile = await client
-          .from("users")
-          .select()
-          .eq("id", user!.id.toString())
+      final rmLastImage = await client
+          .from(table)
+          .select(column)
+          .eq('id', user!.id)
+          .single()
           .execute();
+      if (rmLastImage.data[column] != null)
+        this.deleteStorage(bucket: bucket, path: rmLastImage.data[column]);
 
-      final userProfile = UserModel.fromMap(profile.toJson());
+      final responseUpThumb = await client.from(table).upsert({
+        'id': user.id,
+        '${column}': path,
+      }).execute();
 
-      this.deleteStorage(bucket: "avatars", path: userProfile.avatar!);
-      await client
-          .from("users")
-          .update({
-            "avatar": path,
-          })
-          .eq("id", user.id.toString())
-          .execute();
+      if (responseUpThumb.error != null)
+        throw Exception(responseUpThumb.error!.message);
     } else {
       throw Exception(response.error!.message);
     }
+  }
 
-    print('upload response : ${response}');
+  @override
+  Future<void> deleteStorage({
+    required String bucket,
+    required String path,
+  }) async {
+    final response = await client.storage.from(bucket).remove(['${path}']);
+    if (response.error != null)
+      throw Exception("Não foi possível excluir o arquivo.");
+  }
+
+  @override
+  Future<String?> getPublicUrl(
+      {required String table,
+      required String column,
+      required String bucket}) async {
+    final idUser = await client.auth.user()!.id;
+    final sql =
+        await client.from(table).select().eq("id", idUser).single().execute();
+    final thumb_url = sql.data[column]!;
+    final response = await client.storage.from(bucket).getPublicUrl(thumb_url);
+    if (response.error != null) throw Exception(response.error!.message);
     return response.data;
   }
 
   @override
-  Future<dynamic> deleteStorage(
-      {required String bucket, required String path}) async {
-    final response = await client.storage.from("avatars").remove([path]);
-    return response;
-  }
-
-  @override
-  String? getPublicUrl({required String bucket, required String path}) {
-    () async {
-      final response = await client.storage.from(bucket).list();
-      if (response.error != null) throw Exception(response.error!.message);
-      print("response url ${response.data}");
-      return response.data;
-    };
+  Future<UserModel> updateProfile(
+      {required String table,
+      required String id,
+      required Map<String, dynamic> data}) async {
+    final response =
+        await client.from(table).update(data).eq("id", id).execute();
+    if (response.error != null) throw Exception(response.error!.message);
+    return getProfile(id);
   }
 }
