@@ -44,36 +44,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppTheme.colors.background,
-        elevation: 0,
-        leadingWidth: 0,
-        title: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          child: Row(
-            children: [
-              CircleAvatar(
-                child: Icon(
-                  Icons.account_box,
-                  color: AppTheme.colors.textDisabled,
-                ),
-                backgroundColor: AppTheme.colors.textEnabled,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Text.rich(TextSpan(
-                    text: "Olá,",
-                    style: AppTheme.textStyles.hint,
-                    children: [
-                      TextSpan(
-                          text: "${widget.user.name}".toUpperCase(),
-                          style: AppTheme.textStyles.hintBold)
-                    ])),
-              ),
-            ],
-          ),
-        ),
-      ),
       backgroundColor: AppTheme.colors.background,
       // ignore: avoid_unnecessary_containers
       body: Container(
