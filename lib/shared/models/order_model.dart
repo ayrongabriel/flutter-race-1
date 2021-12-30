@@ -5,6 +5,8 @@ class OrderModel {
   String id_user;
   String name;
   double price;
+  String? description;
+  String? thumbnail;
   String created_at;
 
   OrderModel({
@@ -12,6 +14,8 @@ class OrderModel {
     required this.id_user,
     required this.name,
     required this.price,
+    this.description,
+    this.thumbnail,
     required this.created_at,
   });
 
@@ -20,6 +24,8 @@ class OrderModel {
     String? id_user,
     String? name,
     double? price,
+    String? description,
+    String? thumbnail,
     String? created_at,
   }) {
     return OrderModel(
@@ -27,6 +33,8 @@ class OrderModel {
       id_user: id_user ?? this.id_user,
       name: name ?? this.name,
       price: price ?? this.price,
+      description: description ?? this.description,
+      thumbnail: thumbnail ?? this.thumbnail,
       created_at: created_at ?? this.created_at,
     );
   }
@@ -37,6 +45,8 @@ class OrderModel {
       'id_user': id_user,
       'name': name,
       'price': price,
+      'description': description,
+      'thumbnail': thumbnail,
       'created_at': created_at,
     };
   }
@@ -47,6 +57,8 @@ class OrderModel {
       id_user: map['id_user'] ?? '',
       name: map['name'] ?? '',
       price: map['price']?.toDouble() ?? 0.0,
+      description: map['description'] ?? "",
+      thumbnail: map['thumbnail'] ?? "",
       created_at: map['created_at'] ?? '',
     );
   }
@@ -58,7 +70,7 @@ class OrderModel {
 
   @override
   String toString() {
-    return 'OrderModel(id: $id, id_user: $id_user, name: $name, price: $price, created_at: $created_at)';
+    return 'OrderModel(id: $id, id_user: $id_user, name: $name, price: $price, description: $description, thumbnail: $thumbnail, created_at: $created_at)';
   }
 
   @override
@@ -70,6 +82,8 @@ class OrderModel {
         other.id_user == id_user &&
         other.name == name &&
         other.price == price &&
+        other.description == description &&
+        other.thumbnail == thumbnail &&
         other.created_at == created_at;
   }
 
@@ -79,6 +93,8 @@ class OrderModel {
         id_user.hashCode ^
         name.hashCode ^
         price.hashCode ^
+        description.hashCode ^
+        thumbnail.hashCode ^
         created_at.hashCode;
   }
 }
