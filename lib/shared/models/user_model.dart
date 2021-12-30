@@ -4,26 +4,25 @@ class UserModel {
   final String id;
   final String name;
   final String email;
-  final String? avatar;
-
+  final String? avatar_url;
   UserModel({
     required this.id,
     required this.name,
     required this.email,
-    this.avatar,
+    this.avatar_url,
   });
 
   UserModel copyWith({
     String? id,
     String? name,
     String? email,
-    String? avatar,
+    String? avatar_url,
   }) {
     return UserModel(
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
-      avatar: avatar ?? this.avatar,
+      avatar_url: avatar_url ?? this.avatar_url,
     );
   }
 
@@ -32,7 +31,7 @@ class UserModel {
       'id': id,
       'name': name,
       'email': email,
-      'avatar': avatar,
+      'avatar_url': avatar_url,
     };
   }
 
@@ -41,7 +40,7 @@ class UserModel {
       id: map['id'] ?? '',
       name: map['name'] ?? '',
       email: map['email'] ?? '',
-      avatar: map['avatar'],
+      avatar_url: map['avatar_url'],
     );
   }
 
@@ -52,7 +51,7 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(id: $id, name: $name, email: $email, avatar: $avatar)';
+    return 'UserModel(id: $id, name: $name, email: $email, avatar_url: $avatar_url)';
   }
 
   @override
@@ -63,11 +62,11 @@ class UserModel {
         other.id == id &&
         other.name == name &&
         other.email == email &&
-        other.avatar == avatar;
+        other.avatar_url == avatar_url;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^ name.hashCode ^ email.hashCode ^ avatar.hashCode;
+    return id.hashCode ^ name.hashCode ^ email.hashCode ^ avatar_url.hashCode;
   }
 }
