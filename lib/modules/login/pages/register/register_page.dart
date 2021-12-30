@@ -1,5 +1,4 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:meuapp/modules/login/pages/register/register_controller.dart';
 import 'package:meuapp/modules/login/repositories/login_repository_impl.dart';

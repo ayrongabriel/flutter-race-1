@@ -31,8 +31,6 @@ class AppBottomNavigation extends StatelessWidget {
             IconBottomNavigation(
               onTap: () {
                 onChange(0);
-                // Navigator.pushReplacementNamed(context, "/home",
-                //     arguments: user);
               },
               enable: currentIndex == 0,
               icon: Icons.home,
@@ -40,7 +38,6 @@ class AppBottomNavigation extends StatelessWidget {
             IconBottomNavigation(
               onTap: () {
                 onChange(3);
-                // Navigator.pushNamed(context, "/home");
               },
               enable: currentIndex == 3,
               icon: Icons.add,
@@ -48,7 +45,6 @@ class AppBottomNavigation extends StatelessWidget {
             IconBottomNavigation(
                 onTap: () {
                   onChange(1);
-                  // Navigator.pushNamed(context, "/perfil", arguments: user);
                 },
                 enable: currentIndex == 1,
                 icon: Icons.supervisor_account_outlined),
