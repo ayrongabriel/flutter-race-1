@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 
 import 'package:meuapp/modules/product/repositories/product_repository.dart';
@@ -14,20 +16,21 @@ class ProductController extends ChangeNotifier {
 
   String _name = "";
   String _price = "";
+  String _description = "";
   String _created_at = "";
+
   ProductController({
     required this.user,
     required this.repository,
     this.order,
   });
 
-  void onChange({String? name, String? price, String? created_at}) {
+  void onChange(
+      {String? name, String? price, String? created_at, String? description}) {
     _name = name ?? _name;
     _price = price ?? _price;
+    _description = description ?? _description;
     _created_at = created_at ?? _created_at;
-
-    print(
-        "Dados da compra\n\nName: ${_name} | Price: ${_price} | Data: ${_created_at}");
   }
 
   bool validate() {
@@ -44,7 +47,7 @@ class ProductController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> create() async {
+  Future<void> create({String? path, Uint8List? bytesImage}) async {
     if (validate()) {
       try {
         update(AppState.loading());
@@ -52,7 +55,10 @@ class ProductController extends ChangeNotifier {
             id_user: user.id,
             name: _name,
             price: _price,
-            created_at: _created_at);
+            description: _description,
+            created_at: _created_at,
+            path: path,
+            bytesImage: bytesImage);
         if (response) {
           update(AppState.success<bool>(response));
         } else {
@@ -64,12 +70,15 @@ class ProductController extends ChangeNotifier {
     }
   }
 
-  Future<void> updateOrders() async {
+  Future<void> updateOrders({String? path, Uint8List? bytesImag}) async {
     if (validate()) {
       try {
         update(AppState.loading());
         final response = await repository.update(
-            id: order!.id, name: _name, price: _price, created_at: _created_at);
+            id: order!.id,
+            name: _name,
+            price: _price,
+            description: _description);
         if (response) {
           update(AppState.success<bool>(response));
         } else {
@@ -78,6 +87,16 @@ class ProductController extends ChangeNotifier {
       } catch (e) {
         update(AppState.error(e.toString()));
       }
+    }
+  }
+
+  Future<void> urlAvatar() async {
+    update(AppState.loading());
+    final response = await repository.avatarUrl();
+    try {
+      update(AppState.success<String?>(response));
+    } catch (e) {
+      update(AppState.error(e.toString()));
     }
   }
 }
