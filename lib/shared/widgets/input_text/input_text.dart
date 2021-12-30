@@ -11,6 +11,7 @@ class InputText extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
   final TextEditingController? controller;
+  final int maxLines;
 
   const InputText({
     required this.label,
@@ -19,6 +20,7 @@ class InputText extends StatelessWidget {
     this.onChanged,
     this.validator,
     this.controller,
+    this.maxLines = 1,
     Key? key,
     this.inputFormatters,
     this.keyboardType,
@@ -32,6 +34,7 @@ class InputText extends StatelessWidget {
         Text(label).label,
         SizedBox(height: 12),
         TextFormField(
+          maxLines: maxLines,
           controller: controller,
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
