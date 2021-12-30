@@ -9,6 +9,7 @@ import 'package:meuapp/shared/theme/app_theme.dart';
 import 'package:meuapp/shared/widgets/app_list_tile/app_list_tile.dart';
 import 'package:meuapp/shared/widgets/card_chart/app_card_chart.dart';
 import 'package:meuapp/shared/widgets/card_product/app_card_product.dart';
+import 'package:meuapp/shared/widgets/loading/app_loading.dart';
 
 class FeedPage extends StatefulWidget {
   final UserModel user;
@@ -46,20 +47,10 @@ class _FeedPageState extends State<FeedPage> {
         child: AnimatedBuilder(
           animation: controller,
           builder: (_, __) => controller.state.when(
-            loading: () => Container(
-              height: height - 76,
+            loading: () => AppLoading(
+              height: height,
               width: width,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Text("carregando..."),
-                  ),
-                ],
-              ),
+              message: "carregando...",
             ),
             success: (value) {
               final orders = value as List<OrderModel>;
