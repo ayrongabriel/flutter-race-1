@@ -6,7 +6,7 @@ class OrderModel {
   String name;
   double price;
   String? description;
-  String? thumbnail;
+  String? thumbnail_url;
   String created_at;
 
   OrderModel({
@@ -15,7 +15,7 @@ class OrderModel {
     required this.name,
     required this.price,
     this.description,
-    this.thumbnail,
+    this.thumbnail_url,
     required this.created_at,
   });
 
@@ -25,7 +25,7 @@ class OrderModel {
     String? name,
     double? price,
     String? description,
-    String? thumbnail,
+    String? thumbnail_url,
     String? created_at,
   }) {
     return OrderModel(
@@ -34,7 +34,7 @@ class OrderModel {
       name: name ?? this.name,
       price: price ?? this.price,
       description: description ?? this.description,
-      thumbnail: thumbnail ?? this.thumbnail,
+      thumbnail_url: thumbnail_url ?? this.thumbnail_url,
       created_at: created_at ?? this.created_at,
     );
   }
@@ -46,7 +46,7 @@ class OrderModel {
       'name': name,
       'price': price,
       'description': description,
-      'thumbnail': thumbnail,
+      'thumbnail_url': thumbnail_url,
       'created_at': created_at,
     };
   }
@@ -58,7 +58,7 @@ class OrderModel {
       name: map['name'] ?? '',
       price: map['price']?.toDouble() ?? 0.0,
       description: map['description'] ?? "",
-      thumbnail: map['thumbnail'] ?? "",
+      thumbnail_url: map['thumbnail_url'] ?? "",
       created_at: map['created_at'] ?? '',
     );
   }
@@ -70,7 +70,7 @@ class OrderModel {
 
   @override
   String toString() {
-    return 'OrderModel(id: $id, id_user: $id_user, name: $name, price: $price, description: $description, thumbnail: $thumbnail, created_at: $created_at)';
+    return 'OrderModel(id: $id, id_user: $id_user, name: $name, price: $price, description: $description, thumbnail_url: $thumbnail_url, created_at: $created_at)';
   }
 
   @override
@@ -83,7 +83,7 @@ class OrderModel {
         other.name == name &&
         other.price == price &&
         other.description == description &&
-        other.thumbnail == thumbnail &&
+        other.thumbnail_url == thumbnail_url &&
         other.created_at == created_at;
   }
 
@@ -94,7 +94,7 @@ class OrderModel {
         name.hashCode ^
         price.hashCode ^
         description.hashCode ^
-        thumbnail.hashCode ^
+        thumbnail_url.hashCode ^
         created_at.hashCode;
   }
 }
