@@ -1,8 +1,8 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:meuapp/modules/profile/repository/profile_repository.dart';
+import 'package:meuapp/shared/models/user_model.dart';
 import 'package:meuapp/shared/services/app_database.dart';
-import 'package:supabase/supabase.dart';
 
 class ProfileRepositoryImpl implements ProfileRepository {
   AppDatabase database;
@@ -12,18 +12,36 @@ class ProfileRepositoryImpl implements ProfileRepository {
   });
 
   @override
-  Future<dynamic> upload({required String path, required File file}) async {
-    final response = await database.uploadStorageProfile(
-        bucket: "avatars", path: path, file: file);
+  Future<UserModel> getProfile({required String id}) async {
+    final response = await database.getProfile(id);
     return response;
   }
 
   @override
-  String? getPublicUrl({required String path}) {
-    () async {
-      final response =
-          await database.getPublicUrl(bucket: "avatars", path: path);
-      return response!;
-    };
+  Future<void> upload(
+      {required String filePath, required Uint8List bytes}) async {
+    final response = await database.uploadStorage(
+        bucket: 'avatars',
+        path: filePath,
+        bytes: bytes,
+        table: 'profiles',
+        column: 'avatar_url');
+    return response;
+  }
+
+  @override
+  Future<String?> avatarUrl() async {
+    final response = await database.getPublicUrl(
+        table: "profiles", column: "avatar_url", bucket: "avatars");
+    return response!;
+  }
+
+  Future<UserModel> update({required String id, required String name}) async {
+    final response =
+        await database.updateProfile(table: "profiles", id: id, data: {
+      "name": name.trim(),
+      "updated_at": DateTime.now().toIso8601String(),
+    });
+    return response;
   }
 }

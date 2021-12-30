@@ -1,6 +1,13 @@
-import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:meuapp/shared/models/user_model.dart';
 
 abstract class ProfileRepository {
-  Future<dynamic> upload({required String path, required File file});
-  String? getPublicUrl({required String path});
+  Future<UserModel> getProfile({required String id});
+  Future<UserModel> update({
+    required String id,
+    required String name,
+  });
+  Future<void> upload({required String filePath, required Uint8List bytes});
+  Future<String?> avatarUrl();
 }
