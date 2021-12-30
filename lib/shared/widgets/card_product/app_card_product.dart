@@ -15,42 +15,44 @@ class AppCardProduct extends StatelessWidget {
     return Container(
       width: 232,
       child: Card(
-          elevation: 0,
-          margin: EdgeInsets.only(left: 25),
-          child: Column(
-            children: [
-              ListTile(
-                title: Text(
-                  product.name,
-                  style: AppTheme.textStyles.cardTitleProduct,
-                ),
-                subtitle: Text(
-                  "Estava R\$ ${product.last_price}",
-                  style: AppTheme.textStyles.cardSubTitleProduct,
-                ),
-                leading: CircleAvatar(
-                  radius: 30,
-                  child: product.current_price < product.last_price
-                      ? Icon(
-                          Icons.thumb_up,
-                          color: AppTheme.colors.primary,
-                        )
-                      : Icon(
-                          Icons.thumb_down,
-                          color: Colors.red,
-                        ),
-                  backgroundColor: AppTheme.colors.background,
-                ),
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.only(left: 25),
+        child: Column(
+          children: [
+            ListTile(
+              title: Text(
+                product.name,
+                style: AppTheme.textStyles.cardTitleProduct,
               ),
-              Text.rich(
-                TextSpan(text: "Agora\n", children: [
-                  TextSpan(
-                      text: "R\$ ${product.current_price}",
-                      style: AppTheme.textStyles.cardTitleValueProduct),
-                ]),
-              )
-            ],
-          )),
+              subtitle: Text(
+                "Estava R\$ ${product.last_price}",
+                style: AppTheme.textStyles.cardSubTitleProduct,
+              ),
+              leading: CircleAvatar(
+                radius: 30,
+                child: product.current_price < product.last_price
+                    ? Icon(
+                        Icons.thumb_up,
+                        color: AppTheme.colors.primary,
+                      )
+                    : Icon(
+                        Icons.thumb_down,
+                        color: Colors.red,
+                      ),
+                backgroundColor: AppTheme.colors.background,
+              ),
+            ),
+            Text.rich(
+              TextSpan(text: "Agora\n", children: [
+                TextSpan(
+                    text: "R\$ ${product.current_price}",
+                    style: AppTheme.textStyles.cardTitleValueProduct),
+              ]),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
