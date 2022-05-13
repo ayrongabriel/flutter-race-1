@@ -8,6 +8,7 @@ abstract class ProfileRepository {
     required String id,
     required String name,
   });
-  Future<void> upload({required String filePath, required Uint8List bytes});
+  Future<void> upload(
+      {required String filePath, required Uint8List bytes, required String id});
   Future<String?> avatarUrl();
 }

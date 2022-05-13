@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -29,8 +30,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future imagePicker({required ImageSource source, int? quality}) async {
     try {
-      final imageFile =
-          await ImagePicker().pickImage(source: source, imageQuality: quality);
+      final imageFile = await ImagePicker().pickImage(
+        source: source,
+        imageQuality: quality,
+        maxHeight: 480,
+        maxWidth: 640,
+      );
       if (imageFile == null) return;
 
       final bytes = await imageFile.readAsBytes();
@@ -38,7 +43,11 @@ class _ProfilePageState extends State<ProfilePage> {
       final fileName = '${DateTime.now().toIso8601String()}.$fileExt';
       final filePath = fileName;
 
-      controllerAvatar.updateStorage(path: filePath, bytes: bytes);
+      controllerAvatar.updateStorage(
+        path: filePath,
+        bytes: bytes,
+        id: widget.user.id,
+      );
       setState(() {});
     } on PlatformException catch (e) {
       print(e.message);
@@ -50,8 +59,10 @@ class _ProfilePageState extends State<ProfilePage> {
         context: context,
         builder: (context) {
           return AppModalImagePicker(
-            souceCamera: () => imagePicker(source: ImageSource.camera),
-            souceGalery: () => imagePicker(source: ImageSource.gallery),
+            souceCamera: () =>
+                imagePicker(source: ImageSource.camera, quality: 30),
+            souceGalery: () =>
+                imagePicker(source: ImageSource.gallery, quality: 30),
           );
         });
   }
@@ -133,129 +144,141 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 SizedBox(height: 50),
                 Center(
-                  child: Container(
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(100),
-                      onTap: () {
-                        _showModalImagePicker();
-                      },
-                      child: Stack(
-                        children: [
-                          ClipOval(
-                            child: widget.user.avatar_url == null
-                                ? Container(
-                                    color: AppTheme.colors.textEnabled,
-                                    height: 120,
-                                    width: 120,
-                                    child: Center(child: Text("Foto")),
-                                  )
-                                : Container(
-                                    color: AppTheme.colors.textEnabled,
-                                    height: 120,
-                                    width: 120,
-                                    child: Center(
-                                      child: AnimatedBuilder(
-                                        animation: controllerAvatar,
-                                        builder: (_, __) =>
-                                            controllerAvatar.state.when(
-                                          loading: () => AppLoading(
-                                              height: 120,
-                                              width: 120,
-                                              message: "carregando..."),
-                                          success: (value) => value != null
-                                              ? Image.network(
-                                                  value,
-                                                  width: 120,
-                                                  height: 120,
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : Text("Foto"),
-                                          error: (message, e) =>
-                                              context.showErrorSnackBar(
-                                                  message: message),
-                                          orElse: () {},
+                  child: FadeInDown(
+                    delay: Duration(milliseconds: 300),
+                    child: Container(
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(100),
+                        onTap: () {
+                          _showModalImagePicker();
+                        },
+                        child: Stack(
+                          children: [
+                            ClipOval(
+                              child: widget.user.avatar_url == null
+                                  ? Container(
+                                      color: AppTheme.colors.textEnabled,
+                                      height: 120,
+                                      width: 120,
+                                      child: Center(child: Text("Foto")),
+                                    )
+                                  : Container(
+                                      color: AppTheme.colors.textEnabled,
+                                      height: 120,
+                                      width: 120,
+                                      child: Center(
+                                        child: AnimatedBuilder(
+                                          animation: controllerAvatar,
+                                          builder: (_, __) =>
+                                              controllerAvatar.state.when(
+                                            loading: () => AppLoading(
+                                                height: 120,
+                                                width: 120,
+                                                message: "carregando..."),
+                                            success: (value) => value != null
+                                                ? Image.network(
+                                                    value,
+                                                    width: 120,
+                                                    height: 120,
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : Text("Foto"),
+                                            error: (message, e) =>
+                                                context.showErrorSnackBar(
+                                                    message: message),
+                                            orElse: () {},
+                                          ),
                                         ),
                                       ),
                                     ),
+                            ),
+                            Positioned(
+                              right: 0,
+                              bottom: 0,
+                              child: ClipOval(
+                                child: Container(
+                                  height: 40,
+                                  width: 40,
+                                  color: AppTheme.colors.primary,
+                                  child: Icon(
+                                    Icons.camera_alt_outlined,
+                                    color: AppTheme.colors.textEnabled,
                                   ),
-                          ),
-                          Positioned(
-                            right: 0,
-                            bottom: 0,
-                            child: ClipOval(
-                              child: Container(
-                                height: 40,
-                                width: 40,
-                                color: AppTheme.colors.primary,
-                                child: Icon(
-                                  Icons.camera_alt_outlined,
-                                  color: AppTheme.colors.textEnabled,
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
                 SizedBox(height: 50),
-                AnimatedBuilder(
-                  animation: controller,
-                  builder: (_, __) => controller.state.when(
-                    loading: () => AppLoading(
-                      message: "carregando...",
-                      width: size.width,
-                      height: size.height / 3.5,
-                    ),
-                    success: (value) {
-                      final profile = value;
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          ListTile(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 0),
-                            title: Text("Nome:"),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text("${profile.name}"),
-                                SizedBox(width: 10),
-                                Icon(Icons.arrow_forward_ios_rounded, size: 15),
-                              ],
+                FadeInDown(
+                  delay: Duration(milliseconds: 450),
+                  child: AnimatedBuilder(
+                    animation: controller,
+                    builder: (_, __) => controller.state.when(
+                      loading: () => AppLoading(
+                        message: "carregando...",
+                        width: size.width,
+                        height: size.height / 3.5,
+                      ),
+                      success: (value) {
+                        final profile = value;
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            ListTile(
+                              contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 0),
+                              title: Text("Nome:"),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text("${profile.name}"),
+                                  SizedBox(width: 10),
+                                  Icon(Icons.arrow_forward_ios_rounded,
+                                      size: 15),
+                                ],
+                              ),
+                              onTap: _showModalEdit,
                             ),
-                            onTap: _showModalEdit,
-                          ),
-                          Divider(),
-                          ListTile(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 0),
-                            title: Text("Email: "),
-                            trailing: Text("${widget.user.email}"),
-                          ),
-                        ],
-                      );
-                    },
-                    orElse: () => Container(
-                      color: Colors.red,
+                            Divider(),
+                            ListTile(
+                              contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 0),
+                              title: Text("Email: "),
+                              trailing: Text("${widget.user.email}"),
+                            ),
+                          ],
+                        );
+                      },
+                      orElse: () => Container(
+                        color: Colors.red,
+                      ),
                     ),
                   ),
                 ),
                 AppDividerHorizontal(height: 1, padding: 15),
-                InkWell(
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, "/login");
-                  },
-                  child: Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: AppTheme.colors.textEnabled,
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Sair do app",
-                        style: AppTheme.textStyles.buttonBoldTextColor,
+                FadeInUp(
+                  delay: Duration(milliseconds: 500),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pushReplacementNamed(context, "/login");
+                    },
+                    child: Container(
+                      height: 50,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: AppTheme.colors.textEnabled,
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Sair do app",
+                          style: AppTheme.textStyles.buttonBoldTextColor,
+                        ),
                       ),
                     ),
                   ),

@@ -54,6 +54,7 @@ class Button extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
+      splashColor: AppTheme.colors.primary,
       child: Container(
         height: 58,
         decoration: boxDecoration,

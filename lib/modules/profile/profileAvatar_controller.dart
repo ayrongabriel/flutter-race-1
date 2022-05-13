@@ -18,10 +18,15 @@ class ProfileAvatarController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future updateStorage({required String path, required Uint8List bytes}) async {
+  Future updateStorage({
+    required String path,
+    required Uint8List bytes,
+    required String id,
+  }) async {
     try {
       update(AppState.loading());
-      final response = await repository.upload(filePath: path, bytes: bytes);
+      final response =
+          await repository.upload(filePath: path, bytes: bytes, id: id);
       update(AppState.success<void>(response));
       this.urlAvatar();
     } catch (e) {

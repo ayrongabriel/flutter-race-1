@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 
 import 'package:meuapp/modules/home/pages/feed/feed_controller.dart';
@@ -30,6 +31,7 @@ class _FeedPageState extends State<FeedPage> {
     controller = FeedController(
         repository: FeedRepositoryImpl(database: AppDatabase.instance),
         user: widget.user);
+
     // controller.all();
     controller.allByUser();
     super.initState();
@@ -60,9 +62,11 @@ class _FeedPageState extends State<FeedPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 18),
-                  AppCardChart(
-                    value: controller.sum,
-                    percent: controller.calcChart(products),
+                  FadeInDown(
+                    child: AppCardChart(
+                      value: controller.sum,
+                      percent: controller.calcChart(products),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
@@ -76,8 +80,12 @@ class _FeedPageState extends State<FeedPage> {
                     child: ListView.builder(
                       itemCount: products.length,
                       scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) => AppCardProduct(
-                        product: products[index],
+                      itemBuilder: (context, index) => FadeInLeft(
+                        delay: Duration(
+                            milliseconds: (500 * (1.1 + index) / 4).round()),
+                        child: AppCardProduct(
+                          product: products[index],
+                        ),
                       ),
                     ),
                   ),
@@ -88,10 +96,16 @@ class _FeedPageState extends State<FeedPage> {
                         style: AppTheme.textStyles.titleHome),
                   ),
                   for (var order in orders)
-                    AppListTile(
-                      controller: controller,
-                      order: order,
-                      user: widget.user,
+                    FadeInDown(
+                      delay: Duration(
+                          milliseconds:
+                              (500 * (1.2 + orders.indexOf(order)) / 4)
+                                  .round()),
+                      child: AppListTile(
+                        controller: controller,
+                        order: order,
+                        user: widget.user,
+                      ),
                     ),
                 ],
               );

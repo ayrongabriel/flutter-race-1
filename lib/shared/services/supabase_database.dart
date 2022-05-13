@@ -142,28 +142,30 @@ class SupabaseDatabase implements AppDatabase {
   }
 
   @override
-  Future<void> uploadStorage(
-      {required String bucket,
-      required String path,
-      required Uint8List bytes,
-      required String table,
-      required String column}) async {
-    final user = await client.auth.user();
+  Future<void> uploadStorage({
+    required String bucket,
+    required String path,
+    required Uint8List bytes,
+  }) async {
+    final response =
+        await client.storage.from(bucket).uploadBinary(path, bytes);
+    if (response.error != null) throw Exception(response.error!.message);
+  }
 
+  @override
+  Future<void> updateUploadStorage({
+    required String bucket,
+    required String path,
+    required Uint8List bytes,
+    required String table,
+    required String column,
+    required String columnRef,
+  }) async {
     final response =
         await client.storage.from(bucket).uploadBinary(path, bytes);
     if (response.error == null) {
-      final rmLastImage = await client
-          .from(table)
-          .select(column)
-          .eq('id', user!.id)
-          .single()
-          .execute();
-      if (rmLastImage.data[column] != null)
-        this.deleteStorage(bucket: bucket, path: rmLastImage.data[column]);
-
       final responseUpThumb = await client.from(table).upsert({
-        'id': user.id,
+        'id': columnRef,
         '${column}': path,
       }).execute();
 
@@ -185,15 +187,28 @@ class SupabaseDatabase implements AppDatabase {
   }
 
   @override
-  Future<String?> getPublicUrl(
-      {required String table,
-      required String column,
-      required String bucket}) async {
+  Future<String?> getPublicUrl({
+    required String table,
+    required String column,
+    required String bucket,
+  }) async {
     final idUser = await client.auth.user()!.id;
     final sql =
         await client.from(table).select().eq("id", idUser).single().execute();
     final thumb_url = sql.data[column]!;
     final response = await client.storage.from(bucket).getPublicUrl(thumb_url);
+    if (response.error != null) throw Exception(response.error!.message);
+    return response.data;
+  }
+
+  @override
+  Future<String?> getUrlProduct({
+    required String table,
+    required String thumbName,
+    required String bucket,
+  }) async {
+    final response =
+        await client.storage.from(bucket).getPublicUrl("${thumbName}");
     if (response.error != null) throw Exception(response.error!.message);
     return response.data;
   }

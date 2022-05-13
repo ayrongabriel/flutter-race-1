@@ -25,16 +25,18 @@ class _HomePageState extends State<HomePage> {
   void onChange(int index) async {
     if (index == 3) {
       await showModalBottomSheet(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
             topLeft: Radius.circular(10),
             topRight: Radius.circular(10),
-          )),
-          isScrollControlled: true,
-          context: context,
-          builder: (context) => ProductBottomSheet(
-                user: widget.user,
-              ));
+          ),
+        ),
+        isScrollControlled: true,
+        context: context,
+        builder: (context) => ProductBottomSheet(
+          user: widget.user,
+        ),
+      );
     } else {
       currentIndex = index;
     }

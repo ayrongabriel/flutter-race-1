@@ -11,9 +11,12 @@ class FeedController extends ChangeNotifier {
   FeedRepository repository;
   UserModel user;
 
+  OrderModel? order;
+
   FeedController({
     required this.repository,
     required this.user,
+    this.order,
   });
 
   void update(AppState state) {
@@ -95,16 +98,18 @@ class FeedController extends ChangeNotifier {
       {required String id_user,
       required String name,
       required String price,
+      String? thumbnail_url,
       required String created_at}) async {
     try {
       update(AppState.loading());
       final response = await repository.create(
-          id_user: user.id, name: name, price: price, created_at: created_at);
+          id_user: user.id,
+          name: name,
+          price: price,
+          thumbnail_url: thumbnail_url,
+          created_at: created_at);
       if (response) {
-        print(response);
-        final responseAll = await repository.allByUser(id_user: user.id);
-        update(AppState.success<List<OrderModel>>(responseAll));
-        // update(AppState.success<bool>(response));
+        allByUser();
       } else {
         throw Exception("Não foi possivel cadastrar o produto");
       }
@@ -113,12 +118,11 @@ class FeedController extends ChangeNotifier {
     }
   }
 
-  Future<bool> delete({required String id}) async {
+  Future<bool> delete({required String id, required String thumbnail}) async {
     try {
       update(AppState.loading());
-      await repository.delete(id: id);
-      final response = await repository.allByUser(id_user: user.id);
-      update(AppState.success<List<OrderModel>>(response));
+      await repository.delete(id: id, thumbnail: thumbnail);
+      allByUser();
     } catch (e) {
       update(AppState.error(e.toString()));
     }

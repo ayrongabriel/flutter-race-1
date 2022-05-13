@@ -3,12 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'package:meuapp/modules/home/pages/feed/feed_controller.dart';
+import 'package:meuapp/modules/home/pages/feed/repository/feed_repository_impl.dart';
+import 'package:meuapp/modules/home/pages/feed/thumbnail_controller.dart';
 import 'package:meuapp/modules/product/product_bottomsheet_edit.dart';
 import 'package:meuapp/shared/models/order_model.dart';
 import 'package:meuapp/shared/models/user_model.dart';
+import 'package:meuapp/shared/services/app_database.dart';
 import 'package:meuapp/shared/theme/app_theme.dart';
+import 'package:meuapp/shared/utils/app_routes.dart';
+import 'package:meuapp/shared/widgets/app_list_tile/componentes/background.dart';
+import 'package:meuapp/shared/widgets/loading/app_loading.dart';
 
-class AppListTile extends StatelessWidget {
+class AppListTile extends StatefulWidget {
   final OrderModel order;
   final UserModel user;
   final FeedController controller;
@@ -20,67 +26,64 @@ class AppListTile extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<AppListTile> createState() => _AppListTileState();
+}
+
+class _AppListTileState extends State<AppListTile> {
+  late final ThumbnailController controllerThumbnail;
+  @override
+  void initState() {
+    controllerThumbnail = ThumbnailController(
+        repository: FeedRepositoryImpl(database: AppDatabase.instance));
+
+    setState(() {
+      controllerThumbnail.thumbnailUrl(thumbName: widget.order.thumbnail_url!);
+    });
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     void onChangeModal() async {
       await showModalBottomSheet(
         isScrollControlled: true,
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(10),
-          topRight: Radius.circular(10),
-        )),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10),
+            topRight: Radius.circular(10),
+          ),
+        ),
         context: context,
         builder: (context) => ProductBottomSheetEdit(
-          user: user,
-          order: order,
+          user: widget.user,
+          order: widget.order,
         ),
       );
+      // Navigator.of(context)
+      //     .pushReplacementNamed(AppRoutes.home, arguments: user);
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25),
+      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 8),
       child: Column(
         children: [
           Dismissible(
-            key: Key(order.id),
+            key: Key(widget.order.id),
             dragStartBehavior: DragStartBehavior.start,
-            background: Container(
-              decoration: BoxDecoration(
-                  color: AppTheme.colors.primary,
-                  borderRadius: BorderRadius.circular(8)),
-              child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Icon(Icons.edit, color: AppTheme.colors.background),
-                    Text(' Editar', style: TextStyle(color: Colors.white)),
-                  ],
-                ),
-              ),
+            background: AppBackgroundDimissible(
+              icon: Icon(Icons.edit, color: AppTheme.colors.background),
+              label: ' Editar',
+              color: AppTheme.colors.primary,
+              mainAxisAligment: MainAxisAlignment.start,
             ),
-            secondaryBackground: Container(
-              decoration: BoxDecoration(
-                  color: AppTheme.colors.badColor,
-                  borderRadius: BorderRadius.circular(8)),
-              child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Icon(Icons.delete, color: AppTheme.colors.background),
-                    Text('Excluir', style: TextStyle(color: Colors.white)),
-                  ],
-                ),
-              ),
+            secondaryBackground: AppBackgroundDimissible(
+              icon: Icon(Icons.delete, color: AppTheme.colors.background),
+              label: 'Excluir',
+              color: AppTheme.colors.badColor,
+              mainAxisAligment: MainAxisAlignment.end,
             ),
             onDismissed: (direction) {
-              if (direction == DismissDirection.startToEnd) {
-                print("Editar");
-              } else {
-                print("excluir");
-              }
-
               ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text("Deseja desfazer?")));
             },
@@ -98,7 +101,7 @@ class AppListTile extends StatelessWidget {
                                       text: "Deseja editar o produto ",
                                       children: [
                                         TextSpan(
-                                          text: order.name,
+                                          text: widget.order.name,
                                           style: AppTheme
                                               .textStyles.buttonBoldTextColor,
                                         )
@@ -109,7 +112,7 @@ class AppListTile extends StatelessWidget {
                                       text: "Deseja excluir o produto ",
                                       children: [
                                         TextSpan(
-                                          text: order.name,
+                                          text: widget.order.name,
                                           style: AppTheme
                                               .textStyles.buttonBoldTextColor,
                                         )
@@ -131,7 +134,9 @@ class AppListTile extends StatelessWidget {
                             SizedBox(width: 3),
                             TextButton(
                               onPressed: () {
-                                controller.delete(id: order.id);
+                                widget.controller.delete(
+                                    id: widget.order.id,
+                                    thumbnail: widget.order.thumbnail_url!);
                                 Navigator.of(context).pop();
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
@@ -140,16 +145,22 @@ class AppListTile extends StatelessWidget {
                                       label: "Desfazer",
                                       onPressed: () {
                                         final orderUndo = OrderModel(
-                                            id: order.id,
-                                            id_user: order.id_user,
-                                            name: order.name,
-                                            price: order.price,
-                                            created_at: order.created_at);
-                                        controller.deleteUndo(
-                                            id_user: orderUndo.id_user,
-                                            name: orderUndo.name,
-                                            price: orderUndo.price.toString(),
-                                            created_at: orderUndo.created_at);
+                                            id: widget.order.id,
+                                            id_user: widget.order.id_user,
+                                            name: widget.order.name,
+                                            price: widget.order.price,
+                                            thumbnail_url:
+                                                widget.order.thumbnail_url,
+                                            created_at:
+                                                widget.order.created_at);
+                                        widget.controller.deleteUndo(
+                                          id_user: orderUndo.id_user,
+                                          name: orderUndo.name,
+                                          price: orderUndo.price.toString(),
+                                          thumbnail_url:
+                                              orderUndo.thumbnail_url,
+                                          created_at: orderUndo.created_at,
+                                        );
                                       },
                                     ),
                                   ),
@@ -179,36 +190,89 @@ class AppListTile extends StatelessWidget {
                         );
                       });
             },
-            child: GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, "/show-product", arguments: order);
-              },
-              child: Card(
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
+            child: InkWell(
+              onTap: () => Navigator.of(context)
+                  .pushNamed(AppRoutes.showProduct, arguments: widget.order),
+              child: Container(
                 margin: EdgeInsets.all(0),
-                child: ListTile(
-                  title: Text(
-                    order.name,
-                  ).label,
-                  subtitle: Text("R\$ ${order.price.toStringAsFixed(2)}"),
-                  leading: CircleAvatar(
-                    radius: 30,
-                    child: Text(
-                      DateFormat("dd/MM")
-                          .format(DateTime.parse(order.created_at))
-                          .toString(),
-                      style: AppTheme.textStyles.buttonBoldTextColor,
+                decoration: BoxDecoration(
+                  color: AppTheme.colors.textEnabled,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          bottomLeft: Radius.circular(10),
+                        ),
+                        child: AnimatedBuilder(
+                          animation: controllerThumbnail,
+                          builder: (_, __) => controllerThumbnail.state.when(
+                            loading: () => AppLoading(
+                              height: 120,
+                              width: 120,
+                              message: "carregando...",
+                            ),
+                            success: (value) => Image.network(value,
+                                fit: BoxFit.cover, loadingBuilder:
+                                    (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  // backgroundColor: AppTheme.colors.primary,
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            }),
+                            error: (message, e) => Container(
+                              color: Colors.red,
+                            ),
+                            orElse: () {},
+                          ),
+                        ),
+                      ),
                     ),
-                    backgroundColor: AppTheme.colors.background,
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(widget.order.name).label,
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Text("R\$ ${widget.order.price.toStringAsFixed(2)}"),
+                          SizedBox(height: 10),
+                          Text(
+                            widget.order.updated_at != null
+                                ? DateFormat("dd/MM/y")
+                                    .format(DateTime.parse(
+                                        widget.order.updated_at!))
+                                    .toString()
+                                : DateFormat("dd/MM/y")
+                                    .format(
+                                        DateTime.parse(widget.order.created_at))
+                                    .toString(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
-          SizedBox(
-            height: 18,
           ),
         ],
       ),

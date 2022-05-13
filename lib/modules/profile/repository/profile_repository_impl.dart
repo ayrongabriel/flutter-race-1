@@ -19,13 +19,17 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
   @override
   Future<void> upload(
-      {required String filePath, required Uint8List bytes}) async {
-    final response = await database.uploadStorage(
-        bucket: 'avatars',
-        path: filePath,
-        bytes: bytes,
-        table: 'profiles',
-        column: 'avatar_url');
+      {required String filePath,
+      required Uint8List bytes,
+      required String id}) async {
+    final response = await database.updateUploadStorage(
+      bucket: 'avatars',
+      path: filePath,
+      bytes: bytes,
+      table: 'profiles',
+      column: 'avatar_url',
+      columnRef: id,
+    );
     return response;
   }
 

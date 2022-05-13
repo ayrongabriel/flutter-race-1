@@ -6,6 +6,8 @@ import 'app_theme.dart';
 abstract class IAppStyles {
   TextStyle get title;
   TextStyle get titleHome;
+  TextStyle get titleDetails;
+  TextStyle get titleDetailsPrice;
   TextStyle get cardTitleValueChart;
   TextStyle get cardSubTitleValueChart;
   TextStyle get cardHintChart;
@@ -16,6 +18,7 @@ abstract class IAppStyles {
   TextStyle get subTitle;
   TextStyle get label;
   TextStyle get input;
+  TextStyle get content;
   TextStyle get hint;
   TextStyle get hintBold;
   TextStyle get buttonBackgroundColor;
@@ -61,6 +64,13 @@ class AppStyles implements IAppStyles {
       );
 
   @override
+  TextStyle get content => GoogleFonts.inter(
+        fontSize: 16,
+        color: AppTheme.colors.inputNormal,
+        fontWeight: FontWeight.normal,
+      );
+
+  @override
   TextStyle get hintBold => GoogleFonts.inter(
         fontSize: 14,
         color: AppTheme.colors.inputNormal,
@@ -85,6 +95,20 @@ class AppStyles implements IAppStyles {
   TextStyle get title => GoogleFonts.inter(
         fontSize: 22,
         color: AppTheme.colors.title,
+        fontWeight: FontWeight.bold,
+      );
+
+  @override
+  TextStyle get titleDetails => GoogleFonts.inter(
+        fontSize: 22,
+        color: AppTheme.colors.title,
+        fontWeight: FontWeight.bold,
+      );
+
+  @override
+  TextStyle get titleDetailsPrice => GoogleFonts.inter(
+        fontSize: 22,
+        color: AppTheme.colors.primary,
         fontWeight: FontWeight.bold,
       );
 

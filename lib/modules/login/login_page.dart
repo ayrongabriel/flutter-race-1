@@ -5,7 +5,9 @@ import 'package:meuapp/modules/login/repositories/login_repository_impl.dart';
 import 'package:meuapp/shared/services/app_database.dart';
 import 'package:meuapp/shared/widgets/button/button_widget.dart';
 import 'package:meuapp/shared/widgets/input_text/input_text.dart';
+import 'package:meuapp/shared/widgets/loading/app_loading.dart';
 import 'package:validators/validators.dart';
+import 'package:meuapp/shared/utils/constants_error.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -27,14 +29,7 @@ class _LoginPageState extends State<LoginPage> {
       controller.state.when(
           success: (value) =>
               Navigator.popAndPushNamed(context, "/home", arguments: value),
-          error: (message, _) => scaffoldKey.currentState!
-              .showBottomSheet((context) => BottomSheet(
-                    onClosing: () {},
-                    builder: (context) => Container(
-                      child: Text(message),
-                    ),
-                  )),
-          loading: () => print("loding..."),
+          error: (message, _) => context.showErrorSnackBar(message: message),
           orElse: () {});
     });
     super.initState();
@@ -93,45 +88,47 @@ class _LoginPageState extends State<LoginPage> {
                         value.length >= 6 ? null : "Senha inválida",
                   ),
                 ),
-                SizedBox(
-                  height: 15,
-                ),
+                SizedBox(height: 15),
                 AnimatedBuilder(
-                    animation: controller,
-                    builder: (_, __) => controller.state.when(
-                          loading: () => Padding(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: CircularProgressIndicator(),
+                  animation: controller,
+                  builder: (_, __) => controller.state.when(
+                    loading: () => Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: AppLoading(
+                        message: "validando usuário...",
+                        height: 200,
+                        width: double.infinity,
+                      ),
+                    ),
+                    orElse: () => Column(
+                      children: [
+                        FadeInUp(
+                            delay: Duration(milliseconds: 600),
+                            duration: Duration(milliseconds: 800),
+                            child: Button(
+                              label: "Entrar",
+                              onTap: () {
+                                controller.login();
+                              },
+                            )),
+                        SizedBox(
+                          height: 58,
+                        ),
+                        FadeInUp(
+                          delay: Duration(milliseconds: 380),
+                          duration: Duration(milliseconds: 900),
+                          child: Button(
+                            label: "Criar uma conta",
+                            type: ButtonType.outline,
+                            onTap: () {
+                              Navigator.pushNamed(context, "/login/register");
+                            },
                           ),
-                          orElse: () => Column(
-                            children: [
-                              FadeInUp(
-                                  delay: Duration(milliseconds: 600),
-                                  duration: Duration(milliseconds: 800),
-                                  child: Button(
-                                    label: "Entrar",
-                                    onTap: () {
-                                      controller.login();
-                                    },
-                                  )),
-                              SizedBox(
-                                height: 58,
-                              ),
-                              FadeInUp(
-                                delay: Duration(milliseconds: 380),
-                                duration: Duration(milliseconds: 900),
-                                child: Button(
-                                  label: "Criar uma conta",
-                                  type: ButtonType.outline,
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                        context, "/login/register");
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        )),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 SizedBox(
                   height: 20,
                 )

@@ -28,15 +28,30 @@ abstract class AppDatabase {
   Future<bool> delete({required String table, required String id});
 
   // Storage
-  Future<void> uploadStorage(
-      {required String bucket,
-      required String path,
-      required Uint8List bytes,
-      required String table,
-      required String column});
+  Future<void> uploadStorage({
+    required String bucket,
+    required String path,
+    required Uint8List bytes,
+  });
+  Future<void> updateUploadStorage({
+    required String bucket,
+    required String path,
+    required Uint8List bytes,
+    required String table,
+    required String column,
+    required String columnRef,
+  });
   Future<void> deleteStorage({required String bucket, required String path});
-  Future<String?> getPublicUrl(
-      {required String table, required String column, required String bucket});
+  Future<String?> getPublicUrl({
+    required String table,
+    required String column,
+    required String bucket,
+  });
+  Future<String?> getUrlProduct({
+    required String table,
+    required String thumbName,
+    required String bucket,
+  });
 
   // profile
   Future<UserModel> updateProfile(

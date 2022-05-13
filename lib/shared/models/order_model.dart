@@ -8,6 +8,7 @@ class OrderModel {
   String? description;
   String? thumbnail_url;
   String created_at;
+  String? updated_at;
 
   OrderModel({
     required this.id,
@@ -17,6 +18,7 @@ class OrderModel {
     this.description,
     this.thumbnail_url,
     required this.created_at,
+    this.updated_at,
   });
 
   OrderModel copyWith({
@@ -27,6 +29,7 @@ class OrderModel {
     String? description,
     String? thumbnail_url,
     String? created_at,
+    String? updated_at,
   }) {
     return OrderModel(
       id: id ?? this.id,
@@ -36,6 +39,7 @@ class OrderModel {
       description: description ?? this.description,
       thumbnail_url: thumbnail_url ?? this.thumbnail_url,
       created_at: created_at ?? this.created_at,
+      updated_at: updated_at ?? this.updated_at,
     );
   }
 
@@ -48,6 +52,7 @@ class OrderModel {
       'description': description,
       'thumbnail_url': thumbnail_url,
       'created_at': created_at,
+      'updated_at': updated_at,
     };
   }
 
@@ -57,9 +62,10 @@ class OrderModel {
       id_user: map['id_user'] ?? '',
       name: map['name'] ?? '',
       price: map['price']?.toDouble() ?? 0.0,
-      description: map['description'] ?? "",
-      thumbnail_url: map['thumbnail_url'] ?? "",
+      description: map['description'],
+      thumbnail_url: map['thumbnail_url'],
       created_at: map['created_at'] ?? '',
+      updated_at: map['updated_at'],
     );
   }
 
@@ -70,7 +76,7 @@ class OrderModel {
 
   @override
   String toString() {
-    return 'OrderModel(id: $id, id_user: $id_user, name: $name, price: $price, description: $description, thumbnail_url: $thumbnail_url, created_at: $created_at)';
+    return 'OrderModel(id: $id, id_user: $id_user, name: $name, price: $price, description: $description, thumbnail_url: $thumbnail_url, created_at: $created_at, updated_at: $updated_at)';
   }
 
   @override
@@ -84,7 +90,8 @@ class OrderModel {
         other.price == price &&
         other.description == description &&
         other.thumbnail_url == thumbnail_url &&
-        other.created_at == created_at;
+        other.created_at == created_at &&
+        other.updated_at == updated_at;
   }
 
   @override
@@ -95,6 +102,7 @@ class OrderModel {
         price.hashCode ^
         description.hashCode ^
         thumbnail_url.hashCode ^
-        created_at.hashCode;
+        created_at.hashCode ^
+        updated_at.hashCode;
   }
 }

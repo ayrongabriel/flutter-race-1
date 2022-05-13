@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
@@ -11,6 +12,7 @@ import 'package:meuapp/modules/product/repositories/product_repository_impl.dart
 import 'package:meuapp/shared/models/user_model.dart';
 import 'package:meuapp/shared/services/app_database.dart';
 import 'package:meuapp/shared/theme/app_theme.dart';
+import 'package:meuapp/shared/utils/app_routes.dart';
 import 'package:meuapp/shared/widgets/button/button_widget.dart';
 import 'package:meuapp/shared/widgets/input_text/input_text.dart';
 import 'package:meuapp/shared/widgets/modal/app_modal_image_picker.dart';
@@ -37,12 +39,14 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
   @override
   void initState() {
     controller = ProductController(
-        repository: ProductRepositoryImpl(database: AppDatabase.instance),
-        user: widget.user);
+      repository: ProductRepositoryImpl(database: AppDatabase.instance),
+    );
     controller.addListener(() {
       controller.state.when(
         success: (_) {
-          Navigator.pop(context);
+          Navigator.of(context)
+              .pushReplacementNamed(AppRoutes.home, arguments: widget.user);
+          setState(() {});
         },
         orElse: () {},
       );
@@ -58,8 +62,12 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
 
   Future imagePicker({required ImageSource source, int? quality}) async {
     try {
-      final imageFile =
-          await ImagePicker().pickImage(source: source, imageQuality: quality);
+      final imageFile = await ImagePicker().pickImage(
+        source: source,
+        imageQuality: quality,
+        maxHeight: 480,
+        maxWidth: 640,
+      );
       if (imageFile == null) return;
 
       setState(() => _isLoading = true);
@@ -84,8 +92,10 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
         context: context,
         builder: (context) {
           return AppModalImagePicker(
-            souceCamera: () => imagePicker(source: ImageSource.camera),
-            souceGalery: () => imagePicker(source: ImageSource.gallery),
+            souceCamera: () =>
+                imagePicker(source: ImageSource.camera, quality: 30),
+            souceGalery: () =>
+                imagePicker(source: ImageSource.gallery, quality: 30),
           );
         });
   }
@@ -122,76 +132,95 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(height: 32),
-              InputText(
-                label: "Produto *",
-                hint: "Digite o nome",
-                onChanged: (value) => controller.onChange(name: value),
-                validator: (value) =>
-                    value.isNotEmpty ? null : "Favor digite o nome do produto",
+              FadeInDown(
+                delay: Duration(milliseconds: (500 * (1.0 + 1) / 4).round()),
+                child: InputText(
+                  label: "Produto *",
+                  hint: "Digite o nome",
+                  onChanged: (value) => controller.onChange(name: value),
+                  validator: (value) => value.isNotEmpty
+                      ? null
+                      : "Favor digite o nome do produto",
+                ),
               ),
               SizedBox(height: 8),
-              InputText(
-                label: "Preço *",
-                hint: "Digite o valor",
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  MoneyInputFormatter(
-                    leadingSymbol: "R\$",
-                    useSymbolPadding: true,
-                    // mantissaLength: 4 // the length of the fractional side
-                  )
-                ],
-                onChanged: (value) => controller.onChange(price: value),
-                validator: (value) =>
-                    value.isNotEmpty ? null : "Favor digite o valor do produto",
+              FadeInDown(
+                delay: Duration(milliseconds: (500 * (1.0 + 2) / 4).round()),
+                child: InputText(
+                  label: "Preço *",
+                  hint: "Digite o valor",
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    MoneyInputFormatter(
+                      leadingSymbol: "R\$",
+                      useSymbolPadding: true,
+                      // mantissaLength: 4 // the length of the fractional side
+                    )
+                  ],
+                  onChanged: (value) => controller.onChange(price: value),
+                  validator: (value) => value.isNotEmpty
+                      ? null
+                      : "Favor digite o valor do produto",
+                ),
               ),
               SizedBox(height: 8),
-              InputText(
-                label: "Descrição",
-                hint: "Descrição da compra...",
-                maxLines: 5,
-                onChanged: (value) => controller.onChange(description: value),
+              FadeInDown(
+                delay: Duration(milliseconds: (500 * (1.0 + 3) / 4).round()),
+                child: InputText(
+                  label: "Descrição",
+                  hint: "Descrição da compra...",
+                  maxLines: 5,
+                  onChanged: (value) => controller.onChange(description: value),
+                ),
               ),
               SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(_selectedDate == null
-                        ? 'Data da compra *'
-                        : "Data selecionada: ${DateFormat('dd/MM/y').format(_selectedDate)}"),
-                  ),
-                  TextButton(
-                    onPressed: _showDatePiker,
-                    child: Text("Selecionar data"),
-                  ),
-                ],
+              FadeInDown(
+                delay: Duration(milliseconds: (500 * (1.0 + 4) / 4).round()),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(_selectedDate == null
+                          ? 'Data da compra *'
+                          : "Data selecionada: ${DateFormat('dd/MM/y').format(_selectedDate)}"),
+                    ),
+                    TextButton(
+                      onPressed: _showDatePiker,
+                      child: Text("Selecionar data"),
+                    ),
+                  ],
+                ),
               ),
               SizedBox(height: 8),
               _isLoading
-                  ? GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _isLoading = false;
-                        });
-                      },
-                      child: Container(
-                        height: 150,
-                        width: 150,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: FileImage(_imgTemp), fit: BoxFit.cover),
-                        ),
-                        child: Center(
-                          child: ClipOval(
-                            child: Container(
-                              color:
-                                  AppTheme.colors.background.withOpacity(0.6),
-                              height: 50,
-                              width: 50,
-                              child: Center(
-                                child: Icon(
-                                  Icons.delete,
-                                  color: AppTheme.colors.badColor,
+                  ? FadeIn(
+                      delay:
+                          Duration(milliseconds: (500 * (1.0 + 4) / 4).round()),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        },
+                        child: Container(
+                          height: 150,
+                          width: 150,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            image: DecorationImage(
+                                image: FileImage(_imgTemp), fit: BoxFit.cover),
+                          ),
+                          child: Center(
+                            child: ClipOval(
+                              child: Container(
+                                color:
+                                    AppTheme.colors.background.withOpacity(0.6),
+                                height: 50,
+                                width: 50,
+                                child: Center(
+                                  child: Icon(
+                                    Icons.delete,
+                                    color: AppTheme.colors.badColor,
+                                  ),
                                 ),
                               ),
                             ),
@@ -199,50 +228,63 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                         ),
                       ),
                     )
-                  : ElevatedButton(
-                      onPressed: _showModalImagePicker,
-                      child: Icon(Icons.camera_alt_outlined),
+                  : FadeInUp(
+                      delay:
+                          Duration(milliseconds: (500 * (1.0 + 5) / 4).round()),
+                      child: ElevatedButton(
+                        onPressed: _showModalImagePicker,
+                        child: Icon(Icons.camera_alt_outlined),
+                      ),
                     ),
               SizedBox(height: 28),
-              AnimatedBuilder(
-                animation: controller,
-                builder: (_, __) => controller.state.when(
-                  loading: () => Padding(
-                    padding: EdgeInsets.all(15),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
+              FadeInUp(
+                delay: Duration(milliseconds: (500 * (1.0 + 6) / 4).round()),
+                child: AnimatedBuilder(
+                  animation: controller,
+                  builder: (_, __) => controller.state.when(
+                    loading: () => Padding(
+                      padding: EdgeInsets.all(15),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 15),
+                            child: Text("cadastrando..."),
+                          )
+                        ],
+                      ),
+                    ),
+                    error: (message, e) => Column(
                       children: [
-                        CircularProgressIndicator(),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 15),
-                          child: Text("cadastrando..."),
+                        Text(
+                          message,
+                          style: AppTheme.textStyles.msgError,
+                        ),
+                        SizedBox(height: 28),
+                        Button(
+                          label: "Adicionar",
+                          onTap: () {
+                            controller.create(
+                              userId: widget.user.id,
+                              path: _filePath,
+                              bytesImage: _bytesImage,
+                            );
+                          },
                         )
                       ],
                     ),
-                  ),
-                  error: (message, e) => Column(
-                    children: [
-                      Text(
-                        message,
-                        style: AppTheme.textStyles.msgError,
-                      ),
-                      SizedBox(height: 28),
-                      Button(
-                        label: "Adicionar",
-                        onTap: () {
-                          controller.create(
-                              path: _filePath, bytesImage: _bytesImage);
-                        },
-                      )
-                    ],
-                  ),
-                  orElse: () => Button(
-                    label: "Adicionar",
-                    onTap: () {
-                      controller.create(
-                          path: _filePath, bytesImage: _bytesImage);
-                    },
+                    orElse: () => Button(
+                      label: "Adicionar",
+                      onTap: () {
+                        controller.create(
+                          userId: widget.user.id,
+                          path: _filePath,
+                          bytesImage: _bytesImage,
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
