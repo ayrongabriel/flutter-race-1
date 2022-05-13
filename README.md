@@ -22,7 +22,6 @@ email: ayrongabriel@gmail.com
 
 - [Tabela de Conteúdo](#tabela-de-conteúdo)
 - [Sobre](#sobre)
-    - [Conteúdo visto](#conteúdo-visto)
     - [Alterações](#alterações)
 - [Fontes](#fontes)
 - [Color](#color)
@@ -41,16 +40,6 @@ Desenvolver um aplicativo com login e cadastro utilizando ([Supabase](https://ap
 Após logado no app o usuário poderá inserir suas compras diárias e acompanhar se está pagando a mais pelo mesmo produto. 
 
 Na homepage mostra todas as compras e um chart com uma análise percentual sobre as compras mais cara para o barato, em que atribui-se bom para um percentual maior de preço baixo e ruim para uma quantidade maior do mais caro.
-
-<br>
-
-#### Conteúdo visto
-
-- Navigator (pushNamed(), pushReplacementName(), pop()...)
-- Tabs (Navegação em abas)
-- Drawer (Perzonalizado)
-- Passando dados via construtor
-- Retornando dados a partir do Pop() e recuperando através do then().
 
 <br>
 
